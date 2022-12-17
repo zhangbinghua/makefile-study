@@ -695,9 +695,9 @@ zhangbh@ubuntu2004:<shell$> tree
 
 # 库的生成和使用
 
-
-
 ## 静态库的生成和使用
+
+2-6-1
 
 ```shell
 zhangbh@ubuntu2004:<tmp$> ls
@@ -712,7 +712,7 @@ hello
 
 ## 动态库的生成和使用
 
-
+2-6-2
 
 # Makefile的执行过程
 
@@ -851,6 +851,55 @@ SRCS =lcd.c player.c usb.c media.c
 OBJS =lcd.o player.o usb.o media.o
 gcc -o mp3 lcd.o player.o usb.o media.o
 ```
+
+# 添加目标对头文件的依赖
+
+```makefile
+zhangbh@ubuntu2004:<3.2$> ls
+lcd.c  lcd.h  makefile  media.c  media.h  player.c  usb.c  usb.h
+zhangbh@ubuntu2004:<3.2$> cat makefile 
+.PHONY:all clean
+
+SRCS = $(wildcard *.c)
+OBJS = $(SRCS:.c=.o)
+DEPS = $(SRCS:.c=.d)
+BIN  = mp3
+
+all: $(BIN) $(DEPS)
+
+#如果这里不判断，make clean后会有警告，因为这里的解析阶段没有依赖文件.d
+ifneq ("$(wildcard $(DEPS))","")	
+include $(DEPS)
+endif
+
+$(BIN):$(OBJS)
+	gcc -o $@ $^
+%.o:%.c
+	gcc -o $@ -c $(filter %.c,$^)
+
+# include usb.d
+%.d:%.c
+	gcc -MM $^ > $@
+clean:
+	rm -f  $(BIN) $(OBJS) $(DEPS)
+```
+
+```shell
+zhangbh@ubuntu2004:<3.2$> make
+gcc -o lcd.o -c lcd.c
+gcc -o player.o -c player.c
+gcc -o usb.o -c usb.c
+gcc -o media.o -c media.c
+gcc -o mp3 lcd.o player.o usb.o media.o
+gcc -MM lcd.c > lcd.d
+gcc -MM player.c > player.d
+gcc -MM usb.c > usb.d
+gcc -MM media.c > media.d
+```
+
+# 使用目录管理源文件
+
+
 
 # 深入理解软件构造系统:原理与最佳实践
 
