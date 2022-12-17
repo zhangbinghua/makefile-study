@@ -15,6 +15,7 @@ $(BIN):$(OBJS)
 	gcc -o $@ $^
 %.o:%.c
 	gcc -o $@ -c $(filter %.c,$^)
+#	gcc -o $@ -c $^
 
 # include usb.d
 %.d:%.c
