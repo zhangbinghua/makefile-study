@@ -1,0 +1,2 @@
+cp libdll.so /usr/bin
+./hello
